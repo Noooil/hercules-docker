@@ -1,4 +1,6 @@
 # directories
 build/
 data/
+conf/
+sql-files/
 .DS_Store
