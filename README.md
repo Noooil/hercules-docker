@@ -1,28 +1,34 @@
 # kirchenro
 
 ### Prerequisites
-* [Docker](https://hub.docker.com/?overlay=onboarding)
-* [Git](https://git-scm.com/downloads)
+
+- [Docker](https://hub.docker.com/?overlay=onboarding)
+- [Git](https://git-scm.com/downloads)
 
 ### Download
+
 ```
 git clone https://github.com/Noooil/kirchenro.git
 ```
 
 ### Compilation
+
 ```
-docker build -t build-image .
+docker build -t build-image -f build.dockerfile .
 docker create --name build-container build-image
 docker cp build-container:/app/build .
 ```
+
 at this time you can copy everything you need from the `build-container` like sql-files, db, maps, npcs
 
-delete `build-container` for clean up (optional)  
+delete `build-container` for clean up (optional)
+
 ```
 docker rm -v build-container
 ```
 
 if you copied the `build` folder into your current directory you can explore it and see that there are 3 folders with a structure like this:
+
 ```bash
 ─── char
     ├── Dockerfile
@@ -51,13 +57,16 @@ if you copied the `build` folder into your current directory you can explore it 
                 ├── libtasn1.so.6
                 └── libunistring.so.2
 ```
-This is a minimal docker template of the binary and the shared libraries which can each be built by docker with  
+
+This is a minimal docker template of the binary and the shared libraries which can each be built by docker with
+
 ```
 docker build -t <binary> .
 ```
 
 Resulting in a docker image for each binary
-You can look at the images and their respective checksum with  
+You can look at the images and their respective checksum with
+
 ```
 docker images --no-trunc
 ```
@@ -65,10 +74,13 @@ docker images --no-trunc
 If you change a compilation flag or the sources the checksum will change mere configs that are loaded at runtime will not affect the checksum
 
 These images can be exported with
+
 ```
 docker save -o <filename> <image>
 ```
+
 and be loaded with
+
 ```
 docker load -i <filename>
 ```
@@ -76,17 +88,18 @@ docker load -i <filename>
 ### Database
 
 ```
-docker run \
-    --name mariadb \
-    -e MYSQL_DATABASE=hercules \
-    -e MYSQL_USER=hercules \
-    -e MYSQL_ALLOW_EMPTY_PASSWORD=yes \
-    -v $(pwd)/sql-files:/docker-entrypoint-initdb.d \
-    -v $(pwd)/data:/var/lib/mysql \
-    -p 127.0.0.1:3306:3306 \
-    -it mariadb:latest
+docker build -t mariadb -f database.dockerfile .
+docker run --name mariadb -v $(pwd)/data:/var/lib/mysql -v socket:/var/run/mysqld -d mariadb
 ```
 
+Connect to database (new container connect over socket)
+
 ```
-docker run -it --network host --rm mariadb mysql -h127.0.0.1 -uroot
+docker run -it --rm --volumes-from mariadb mariadb mysql -u root -p
+```
+
+Connect to database (attach new shell to running container)
+
+```
+docker exec -it mariadb bash
 ```

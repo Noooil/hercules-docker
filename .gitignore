@@ -4,5 +4,4 @@ data/
 conf/
 maps/
 db/
-sql-files/
 .DS_Store
