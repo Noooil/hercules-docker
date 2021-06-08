@@ -1,4 +1,4 @@
-# kirchenro
+# Hercules in Docker
 
 ### Prerequisites
 
@@ -8,7 +8,7 @@
 ### Download
 
 ```
-git clone https://github.com/Noooil/kirchenro.git
+git clone https://github.com/Noooil/hercules-docker.git
 ```
 
 ### Compilation
